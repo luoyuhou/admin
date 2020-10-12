@@ -54,3 +54,6 @@ CREATE TABLE `fa_course_user_process` (
 
 ALTER TABLE `fastadmin`.`fa_course`
 MODIFY COLUMN `status` varchar(10) NULL DEFAULT 1 COMMENT '状态' AFTER `title`;
+ALTER TABLE `fastadmin`.`fa_course_type`
+MODIFY COLUMN `admin_id` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '管理员' AFTER `id`,
+MODIFY COLUMN `user_id` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '会员' AFTER `admin_id`;
