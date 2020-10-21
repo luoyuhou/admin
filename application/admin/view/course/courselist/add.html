@@ -9,7 +9,11 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Course_id')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <input id="c-course_id" data-rule="required" data-source="course/index" class="form-control selectpage" name="row[course_id]" type="text" value="">
+            <select id="c-flag" data-rule="required" class="form-control selectpicker" name="row[course_id]">
+                {volist name='course' id='vo'}
+                <option value="{$vo.id}">{$vo.title}</option>
+                {/volist}
+            </select>
         </div>
     </div>
     <div class="form-group">
@@ -19,9 +23,33 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Path')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group input-groupp-md">
+                <input id="c-path" data-rule="required" class="form-control" name="row[path]" type="text">
+                <a href="javascript:;" class="btn-search-icon input-group-addon" id="upload-path">上传</a>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-time" data-rule="required" class="form-control" name="row[time]" type="nu">
+        </div>
+    </div>
+    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Sort')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-sort" data-rule="required" class="form-control" name="row[sort]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Url')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group input-groupp-md">
+                <input id="c-url" data-rule="required" class="form-control" name="row[url]" type="text">
+                <a href="javascript:;" class="btn-search-icon input-group-addon" id="upload-url">上传</a>
+            </div>
         </div>
     </div>
     <div class="form-group">
@@ -37,12 +65,6 @@
                     否
                 </label>
             </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Url')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input id="c-url" class="form-control" name="row[url]" type="text">
         </div>
     </div>
     <div class="form-group layer-footer">

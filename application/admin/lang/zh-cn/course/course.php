@@ -7,7 +7,8 @@ return [
     'Public'     => '公开类型',
     'Type'       => '课程类型',
     'Price'      => '价格',
-    'Url'        => '头像地址',
+    'Courselist' => '课程列表',
+    'Path'        => '图像地址',
     'Createtime' => '创建时间',
     'Updatetime' => '更新时间'
 ];

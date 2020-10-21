@@ -1,0 +1,5 @@
+.idea
+application/config.php
+application/database.php
+public/uploads
+runtime

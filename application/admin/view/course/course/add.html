@@ -24,13 +24,13 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Url')}:</label>
+        <label class="control-label col-xs-12 col-sm-2">{:__('Path')}:</label>
         <div class="col-xs-12 col-sm-8">
-<!--            <input id="c-url" class="form-control" name="row[url]" type="text" value="">-->
-            <div class="profile-avatar-container">
-                <img class="profile-user-img img-responsive" src="http://127.0.0.1:8360/static/image/avatar.png" alt="" style="margin: 0;">
-                <div class="profile-avatar-text">点击编辑</div>
-                <button type="button" id="faupload-avatar" class="faupload dz-clickable" data-input-id="c-avatar" initialized="true"><i class="fa fa-upload dz-message"></i> 上传</button>
+            <input id="c-url" class="hidden" name="row[path]" type="text" value="">
+            <div class="profile-avatar-container" style="position: relative;">
+                <img class="profile-user-img img-responsive" id="preview" src="{$api_url}/static/image/avatar.png" alt="" style="margin: 0; width: 100px;height: 100px;">
+                <div class="profile-avatar-text" style="width: 100px; height: 100px;text-align: center; line-height: 100px; position: absolute;left: 0; top: 0;background-color:#ddd;color: white; display: none;">点击编辑</div>
+                <button type="button" id="faupload" class="faupload dz-clickable" initialized="true" style="width: 100px; height: 100px; position: absolute; left: 0; top: 0; opacity: 0;"><i class="fa fa-upload dz-message"></i> 上传</button>
             </div>
         </div>
     </div>

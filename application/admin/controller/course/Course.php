@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use think\Db;
 use think\Request;
 use think\Session;
+use think\Config;
 
 /**
  * 课程管理
@@ -20,12 +21,13 @@ class Course extends Backend
      * @var \app\admin\model\Course
      */
     protected $model = null;
+    protected $api_url = null;
 
     public function _initialize()
     {
         parent::_initialize();
         $this->model = new \app\admin\model\Course;
-
+        $this->api_url = Config::get('fastadmin.api_url');
     }
 
     public function import()
@@ -82,6 +84,8 @@ class Course extends Backend
         }
         $type = Db::name('course_type')->field('id, name')->select();
         $this->assign('type', $type);
+        $this->assign('api_url', $this->api_url);
+        $this->assignconfig('api_url', $this->api_url);
         return $this->view->fetch();
     }
 
@@ -101,7 +105,7 @@ class Course extends Backend
                 ->join('admin d', 'a.admin_id = d.id')
                 ->where($where)
                 ->order($sort, $order)
-                ->field('a.id,a.title as `a.title`,a.status as `a.status`,a.public as `a.public`,a.type as `a.type`,a.price as `a.price`,a.createtime,a.updatetime,d.username as `d.username`')
+                ->field('a.id,a.title as `a.title`,a.status as `a.status`,a.public as `a.public`,a.type as `a.type`,a.price as `a.price`,a.path as path,a.createtime,a.updatetime,d.username as `d.username`')
                 ->paginate($limit);
 //dump(Db::name('course')->getLastSql());die;
             $result = array("total" => $list->total(), "rows" => $list->items());
@@ -110,6 +114,7 @@ class Course extends Backend
         }
         $type = Db::name('course_type')->field('id, name')->select();
         $this->assignconfig('type', $type); // 返回
+        $this->assignconfig('api_url', $this->api_url);
         return $this->view->fetch();
     }
 
