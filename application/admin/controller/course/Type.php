@@ -86,9 +86,6 @@ class Type extends Backend
                     }
                     $session = Session::get();
                     $params['admin_id'] = $session['admin']['id'];
-                    if ($session['user']) {
-                        $params['user_id'] = $session['user']['id'];
-                    }
                     $result = $this->model->allowField(true)->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
