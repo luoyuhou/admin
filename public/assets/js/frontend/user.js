@@ -11,6 +11,10 @@ define(['jquery', 'bootstrap', 'frontend', 'form', 'template'], function ($, und
             //本地验证未通过时提示
             $("#login-form").data("validator-options", validatoroptions);
 
+            var timerLogin;
+            var timerExpire;
+            var token;
+
             $(document).on("change", "input[name=type]", function () {
                 var type = $(this).val();
                 $("div.form-group[data-type]").addClass("hide");
@@ -45,6 +49,51 @@ define(['jquery', 'bootstrap', 'frontend', 'form', 'template'], function ($, und
                             Layer.closeAll();
                         });
                     }
+                });
+            });
+
+            function refreshScanLoginImg() {
+                $.ajax({url: './user/getscanloginurl', success: function (data, ret) {
+                    $('#scanloginimg').attr('src', "../../" + data.url);
+                    token = data.token;
+                }});
+                waitScanLogin();
+            }
+
+            $(document).on("click", "#scanloginimg", function () {
+                refreshScanLoginImg();
+            });
+
+            function waitScanLogin() {
+                clearTimeout(timerExpire);
+                clearInterval(timerLogin);
+                timerExpire = setTimeout(function () {
+                    clearInterval(timerLogin);
+                    $('#scanloginexpire').removeClass('hidden');
+                }, 60000);
+                timerLogin = setInterval(function () {
+                    $.ajax({
+                        url: './user/getscanlogin?token=' + token,
+                        success: function (res) {
+                            if (!res.msg) {
+                                clearTimeout(timerExpire);
+                                clearInterval(timerLogin);
+                                $('#scanloginsuccess').removeClass('hidden');
+                            }
+                        }
+                    });
+                }, 1000);
+            }
+
+            $(document).on("click", ".btn-scan", function () {
+                refreshScanLoginImg();
+                var id = "scanlogintpl";
+                var content = Template(id, {});
+                Layer.open({
+                    type: 1,
+                    title: __('Scan login'),
+                    area: ["450px", "355px"],
+                    content: content,
                 });
             });
         },

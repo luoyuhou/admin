@@ -6,12 +6,17 @@ use addons\wechat\model\WechatCaptcha;
 use app\common\controller\Frontend;
 use app\common\library\Ems;
 use app\common\library\Sms;
+//use app\common\library\token\driver\Redis;
+//use think\cache\driver\Redis;
 use app\common\model\Attachment;
+use fast\Random;
 use think\Config;
 use think\Cookie;
 use think\Hook;
 use think\Session;
 use think\Validate;
+use app\common\behavior\Common;
+use function Composer\Autoload\includeFile;
 
 /**
  * 会员中心
@@ -19,8 +24,10 @@ use think\Validate;
 class User extends Frontend
 {
     protected $layout = 'default';
-    protected $noNeedLogin = ['login', 'register', 'third'];
+    protected $noNeedLogin = ['login', 'register', 'third', 'getscanloginurl', 'getscanlogin'];
     protected $noNeedRight = ['*'];
+    protected $token_key = "SCAN_LOGIN_TOKEN";
+    protected $token_expire = 60;
 
     public function _initialize()
     {
@@ -323,5 +330,27 @@ class User extends Frontend
         }
         $this->view->assign("mimetypeList", \app\common\model\Attachment::getMimetypeList());
         return $this->view->fetch();
+    }
+
+    public function getscanloginurl() {
+        $common = new Common();
+        $redis = $common->redisClient();
+        $token = Random::uuid();
+        $redis->set('token-'.$token, 1, $this->token_expire);
+        return ["url" =>$common->qrcode($token), "token" => $token];
+    }
+
+    public function getscanlogin() {
+        $token = $_GET['token'];
+        if (!$token) {
+            $this->error('Invalid Token');
+        }
+        $common = new Common();
+        $redis = $common->redisClient();
+        $user = $redis->hGet($this->token_key, $token);
+        if (!$user) {
+            $this->error("Forbidden");
+        }
+        $this->result($user);
     }
 }

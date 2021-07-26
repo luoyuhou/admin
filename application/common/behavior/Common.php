@@ -73,4 +73,33 @@ class Common
         ]);
         $this->moduleInit($request);
     }
+
+    public function qrcode($value, $options = []) {
+        vendor("phpqrcode.phpqrcode"); //引入库类
+        $errorCorrectionLevel = 'L'; //容错级别
+        $matrixPointSize = 10; //生成图片大小
+        $basePath = APP_PATH."../public/";
+        $path = "assets/qrcode";
+        if(!is_dir($basePath.$path)){
+            mkdir($basePath.$path);
+        }
+        $date = date("Ymd");
+        $path = $path."/".$date;
+        if (!is_dir($basePath.$path)) {
+            mkdir($basePath.$path);
+        }
+        //设置二维码文件名
+        $filename = $path.'/'.time().rand(10000,9999999).'.png';
+        //生成二维码
+        \QRcode::png($value, $basePath.$filename, $errorCorrectionLevel, $matrixPointSize, 2);
+
+        return $filename;
+    }
+
+    public function redisClient(): \Redis
+    {
+        $redis = new \Redis();
+        $redis->connect('127.0.0.1', 6379);
+        return $redis;
+    }
 }
