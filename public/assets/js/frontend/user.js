@@ -75,10 +75,14 @@ define(['jquery', 'bootstrap', 'frontend', 'form', 'template'], function ($, und
                     $.ajax({
                         url: './user/getscanlogin?token=' + token,
                         success: function (res) {
-                            if (!res.msg) {
+                            if (res.code) {
+                                Toastr.success(__('Scan login Success'));
                                 clearTimeout(timerExpire);
                                 clearInterval(timerLogin);
                                 $('#scanloginsuccess').removeClass('hidden');
+                                setTimeout(function () {
+                                    location.href = res.url ? res.url : "/";
+                                }, 1000);
                             }
                         }
                     });

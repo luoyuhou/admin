@@ -139,5 +139,6 @@ return [
     'You have no permission'                                 => '你没有权限访问',
     'An unexpected error occurred'                           => '发生了一个意外错误,程序猿正在紧急处理中',
     'This page will be re-directed in %s seconds'            => '页面将在 %s 秒后自动跳转',
-    'Scan login'                                             => '扫描登陆'
+    'Scan login'                                             => '扫描登陆',
+    "Scan login Success"                                     => '扫描登陆成功'
 ];

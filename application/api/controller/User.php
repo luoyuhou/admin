@@ -5,20 +5,31 @@ namespace app\api\controller;
 use app\common\controller\Api;
 use app\common\library\Ems;
 use app\common\library\Sms;
+use fast\Http;
 use fast\Random;
+use think\Console;
+use think\exception\PDOException;
+use think\Log;
 use think\Validate;
+use think\Env;
+use app\common\behavior\Common;
+use think\Request;
 
 /**
  * 会员接口
  */
 class User extends Api
 {
-    protected $noNeedLogin = ['login', 'mobilelogin', 'register', 'resetpwd', 'changeemail', 'changemobile', 'third'];
+    protected $noNeedLogin = ['login', 'mobilelogin', 'register', 'resetpwd', 'changeemail', 'changemobile', 'third', 'wxlogin', 'binduserprofile'];
     protected $noNeedRight = '*';
+    protected $redisClient;
+    protected $users_token_map = 'users_token_map';
 
     public function _initialize()
     {
         parent::_initialize();
+        $comm = new Common();
+        $this->redisClient = $comm->redisClient();
     }
 
     /**
@@ -321,6 +332,167 @@ class User extends Api
             $this->success(__('Reset password successful'));
         } else {
             $this->error($this->auth->getError());
+        }
+    }
+
+    public function scanloginweb() {
+        $code = $this->request->request('code');
+        $user = $this->auth->getUserinfo();
+        if (empty($user)) {
+            $this->error('请重新登陆小程序');
+        }
+        $this->redisClient->set('scan-token-'.$code, $user['id'], 30);
+        $this->success('扫描成功');
+    }
+
+    public function wxlogin() {
+        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
+        if (!empty($token) || $this->auth->check()) {
+            $this->success('', $this->auth->getUserinfo());
+        }
+        $code = $_GET['code'];
+        $domain = Env::get('wx.login_url', '');
+        $appId = Env::get('wx.appId', '');
+        $secret = Env::get('wx.secret', '');
+        $url = $domain . '/sns/jscode2session?appid=' . $appId . "&secret=" .$secret."&js_code=" .$code. "&grant_type=authorization_code";
+        $output = Http::sendRequest($url);
+        if (empty($output['msg'])) {
+            $this->error('登陆失败');
+        }
+        $sess = json_decode($output['msg'], true);
+        if (empty($sess['openid'])) {
+            $this->error('登陆失败');
+        }
+        $wx_id = $sess['openid'];
+        try {
+            $user = \app\common\model\User::get(['wx_id' => $wx_id]);
+            $token = $this->getweixinlogintoken($wx_id);
+            if (empty($token)) {
+                $this->error('未知用户');
+            }
+            if (empty($user)) {
+                // insert
+                $insert = $this->createUser($wx_id);
+                if ($insert) {
+                    $this->success('绑定用户信息', ['token' => $token], 301);
+                }
+            } else {
+                // login
+                if (empty($user->username)) {
+                    $this->success('绑定用户信息', ['token' => $token], 301);
+                }
+                $login = $this->autologin($user->id);
+                if ($login) {
+                    $this->success('', $this->auth->getUserinfo());
+                }
+            }
+        } catch (PDOException $error) {
+            Log::error('[select user] Error: '.$error);
+        }
+        $this->error('登陆失败');
+    }
+
+    private function getweixinlogintoken($wx_id) {
+        if(empty($wx_id)) {
+            return '';
+        }
+        $token = $this->redisClient->hget($this->users_token_map, $wx_id);
+        if (empty($token)) {
+            $token = Random::uuid();
+            $this->redisClient->hset($this->users_token_map, $wx_id, $token);
+            $this->redisClient->set($token, $wx_id, 5 * 60);
+        } else {
+            $exist = $this->redisClient->get($token);
+            if (empty($exist)) {
+                $token = Random::uuid();
+                $this->redisClient->hset($this->users_token_map, $wx_id, $token);
+                $this->redisClient->set($token, $wx_id, 5 * 60);
+            }
+        }
+        return $token;
+    }
+
+    private function createUser($wx_id) {
+        try {
+            return \app\common\model\User::create(['wx_id' => $wx_id]);
+        } catch(PDOException $error) {
+            Log::error('[create user] Error: '.$error);
+            return false;
+        }
+    }
+
+    private function autologin($user_id){
+        return $this->auth->direct($user_id);
+    }
+
+    public function binduserprofile() {
+        $token = $this->request->post('token');
+        if (empty($token)) {
+            $this->error('token required', '', 400);
+        }
+        $wx_id = $this->redisClient->get($token);
+        if (empty($wx_id)) {
+            $this->error('已过有效期，请重新登陆!', '', 403);
+        }
+        $user = \app\common\model\User::get(['wx_id' => $wx_id]);
+        if (empty($user)) {
+            $this->error('用户不存在，请重新登陆!');
+        }
+        $id = $user['id'];
+        $username = $this->request->post('username');
+        $nickname = $this->request->post('nickname');
+        $password = $this->request->post('password');
+        if (!empty($password)) {
+            $salt = Random::alnum();
+            $password = $this->auth->getEncryptPassword($password, $salt);
+        } else {
+            $password = null;
+            $salt = null;
+        }
+        $email = $this->request->post('email');
+        $mobile = $this->request->post('mobile');
+        $avatar = $this->request->post('avatar');
+        $gender = $this->request->post('gender');
+        $bio = $this->request->post('bio');
+        $birthday = $this->request->post('birthday');
+        $status = 'normal';
+        $time = time();
+        $logintime = $time;
+        $prevtime = $time;
+        $jointime = $time;
+        $ip = Request::instance()->ip();
+        $loginip = $ip;
+        $joinip = $ip;
+        try {
+            $res = \app\common\model\User::update([
+                'username' => $username,
+                'nickname' => $nickname,
+                'password' => $password,
+                'salt'     => $salt,
+                'email'    => $email,
+                'mobile'   => $mobile,
+                'avatar'  => $avatar,
+                'gender'  => $gender,
+                'bio'     => $bio,
+                'birthday' => $birthday,
+                'status'  => $status,
+                'logintime' => $logintime,
+                'prevtime'  => $prevtime,
+                'jointime'  => $jointime,
+                'loginip'   => $loginip,
+                'joinip'    => $joinip
+            ], ['id' => $id]);
+            if (empty($res)) {
+                $this->error('绑定信息失败');
+            }
+            $logined = $this->auth->direct($id);
+            if ($logined) {
+                $this->success('', $this->auth->getUserinfo());
+            }
+            $this->error('登陆失败');
+        } catch (PDOException $error) {
+            Log::error('[bind user profile] Error: '.$error);
+            $this->error('绑定出错了');
         }
     }
 }

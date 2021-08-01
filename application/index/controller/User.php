@@ -13,6 +13,7 @@ use fast\Random;
 use think\Config;
 use think\Cookie;
 use think\Hook;
+use think\Log;
 use think\Session;
 use think\Validate;
 use app\common\behavior\Common;
@@ -336,7 +337,7 @@ class User extends Frontend
         $common = new Common();
         $redis = $common->redisClient();
         $token = Random::uuid();
-        $redis->set('token-'.$token, 1, $this->token_expire);
+        $redis->set('scan-token-'.$token, 0, $this->token_expire);
         return ["url" =>$common->qrcode($token), "token" => $token];
     }
 
@@ -347,10 +348,14 @@ class User extends Frontend
         }
         $common = new Common();
         $redis = $common->redisClient();
-        $user = $redis->hGet($this->token_key, $token);
-        if (!$user) {
+        $user_id = $redis->get('scan-token-'.$token);
+        if (!$user_id) {
             $this->error("Forbidden");
         }
-        $this->result($user);
+        $result = $this->auth->direct($user_id);
+        if ($result) {
+            $this->success(__('Logged in successful'), url('user/index'));
+        }
+        $this->error('登陆失败');
     }
 }
