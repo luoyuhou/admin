@@ -33,3 +33,72 @@ CREATE TABLE `fa_game_info_detail` (
     `createtime` int(10) DEFAULT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='游戏信息详情表';
+
+DROP TABLE IF EXISTS `fa_order`;
+CREATE TABLE `fa_order` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` int unsigned NOT NULL COMMENT '用户',
+    `order_id` varchar(32) NOT NULL COMMENT '订单号',
+    `state` tinyint(2) NOT NULL DEFAULT 0 COMMENT '订单状态',
+    `amount` int unsigned NOT NULL COMMENT '所得金额',
+    `price` int unsigned NOT NULL COMMENT '标价',
+    `money` int unsigned NOT NULL COMMENT '充值金额',
+    `discount` tinyint(2) unsigned NOT NULL DEFAULT 0 COMMENT '折扣',
+    `recharge_type` tinyint(1) unsigned NOT NULL COMMENT '充值方式',
+    `origin` varchar(128) NOT NULL COMMENT '充值来源',
+    `is_delete` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
+    `createtime` int(10) DEFAULT NULL COMMENT '创建时间',
+    `finishtime` int(10) DEFAULT NULL COMMENT '完成时间',
+    `updatetime` int(10) DEFAULT NULL COMMENT '更新时间',
+    `deletetime` int(10) DEFAULT NULL COMMENT '删除时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `order_index`(`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='充值订单表';
+
+DROP TABLE IF EXISTS `fa_order_detail`;
+CREATE TABLE `fa_order_detail` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `o_id` int unsigned NOT NULL COMMENT '订单ID',
+    `event` varchar(255) DEFAULT NULL COMMENT '活动',
+    `coupon` varchar(255) DEFAULT NULL COMMENT '使用卡券',
+    `additional` varchar(255) DEFAULT NULL COMMENT '额外赠送',
+    `description` varchar(255) DEFAULT NULL COMMENT '说明',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `order_detail_index`(`o_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单详情表';
+
+DROP TABLE IF EXISTS `fa_refund`;
+CREATE TABLE `fa_refund` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` int unsigned NOT NULL COMMENT '用户',
+    `order_id` varchar(32) NOT NULL COMMENT '订单号',
+    `state` tinyint(2) NOT NULL DEFAULT 0 COMMENT '订单状态',
+    `money` int unsigned NOT NULL COMMENT '退款金额',
+    `receiver` varchar(128) NOT NULL COMMENT '收款账号',
+    `note` text DEFAULT NULL COMMENT '备注',
+    `createtime` int(10) DEFAULT NULL COMMENT '申请时间',
+    `finishtime` int(10) DEFAULT NULL COMMENT '完成时间',
+    `updatetime` int(10) DEFAULT NULL COMMENT '更新时间',
+    `deletetime` int(10) DEFAULT NULL COMMENT '删除时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `refund_index`(`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='退款表';
+
+DROP TABLE IF EXISTS `fa_terminal`;
+CREATE TABLE `fa_terminal` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `number` varchar(64) NOT NULL COMMENT '设备编号',
+    `name` varchar(64) NOT NULL COMMENT '设备名称',
+    `state` tinyint(1) NOT NULL DEFAULT 0 COMMENT '设备状态',
+    `group` tinyint(4) unsigned NOT NULL COMMENT '设备分组',
+    `level` tinyint(2) unsigned NOT NULL COMMENT '设备级别',
+    `address` varchar(64) DEFAULT NULL COMMENT '设备位置',
+    `usetime` int unsigned NOT NULL DEFAULT 0 COMMENT '设备使用时间',
+    `available` tinyint(1) NOT NULL DEFAULT 1 COMMENT '设备可用',
+    `createtime` int(10) DEFAULT NULL COMMENT '投用时间',
+    `updatetime` int(10) DEFAULT NULL COMMENT '更新时间',
+    `deletetime` int(10) DEFAULT NULL COMMENT '删除时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `terminal_index`(`number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备终端表';
+
