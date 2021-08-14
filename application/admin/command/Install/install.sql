@@ -14,7 +14,7 @@ CREATE TABLE `fa_charges_config` (
 DROP TABLE IF EXISTS `fa_game_info`;
 CREATE TABLE `fa_game_info` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `game_type` int NOT NULL COMMENT "游戏模式",
+    `game_type` int NOT NULL COMMENT '游戏模式',
     `game_name` varchar(16) NOT NULL COMMENT '游戏名称',
     `people` tinyint(4) unsigned NOT NULL COMMENT '参数人数',
     `game_time` tinyint(4) unsigned NOT NULl COMMENT '游戏时间',
@@ -25,7 +25,7 @@ CREATE TABLE `fa_game_info` (
 DROP TABLE IF EXISTS `fa_game_info_detail`;
 CREATE TABLE `fa_game_info_detail` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `game_info_id` int NOT NULL COMMENT "游戏记录ID",
+    `game_info_id` int NOT NULL COMMENT '游戏记录ID',
     `user_id` int NOT NULL COMMENT '用户ID',
     `rank` tinyint(4) unsigned NOT NULL COMMENT '排名',
     `time` tinyint(4) unsigned NOT NULl COMMENT '耗时',
@@ -101,4 +101,16 @@ CREATE TABLE `fa_terminal` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `terminal_index`(`number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备终端表';
+
+DROP TABLE IF EXISTS `fa_terminal_config`;
+CREATE TABLE `fa_terminal_config` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `t_id` int unsigned NOT NULL COMMENT '设备id',
+    `video_url` varchar(255) COMMENT '视频地址',
+    `text` text COMMENT '描述',
+    `btn_config_package` text COMMENT '按键配置',
+    `extend` text COMMENT '其他',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `terminal_config_index`(`t_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备终端配置表';
 

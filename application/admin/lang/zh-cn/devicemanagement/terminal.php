@@ -11,5 +11,6 @@ return [
     'Available'  => '设备可用',
     'Createtime' => '投用时间',
     'Updatetime' => '更新时间',
-    'Deletetime' => '删除时间'
+    'Deletetime' => '删除时间',
+    'TerminalConfig' => '终端设置'
 ];

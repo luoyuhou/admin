@@ -26,9 +26,7 @@ class GameInfoDetail extends Model
 
     public function getListByGameId($id)
     {
-         $rows = $this->where(['game_info_id' => $id])->find();
-         $count = $this->where(['game_info_id' => $id])->count();
-         return array('total' => $count, 'rows' => [$rows]);
+         return $this->where(['game_info_id' => $id])->select();
     }
     
 

@@ -32,11 +32,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'group', title: __('Group')},
                         {field: 'level', title: __('Level')},
                         {field: 'address', title: __('Address'), operate: 'LIKE'},
-                        {field: 'usetime', title: __('Usetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'usetime', title: __('Usetime')},
                         {field: 'available', title: __('Available')},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {field: 'operate', title: __('Operate'), table: table,
+                            events: Table.api.events.operate,
+                            buttons: [{
+                                name: 'detail',
+                                text: __('TerminalConfig'),
+                                icon: 'fa fa-cog',
+                                classname: 'btn btn-info btn-xs btn-detail btn-dialog',
+                                url: 'devicemanagement/terminal_config/edit',
+                            }],
+                            formatter: Table.api.formatter.operate
+                        }
                     ]
                 ]
             });

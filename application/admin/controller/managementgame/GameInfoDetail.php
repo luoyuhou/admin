@@ -39,7 +39,8 @@ class GameInfoDetail extends Backend
     public function index($ids = null)
     {
         if ($this->request->isAjax()) {
-            return json($this->model->getListByGameId($ids));
+            $rows = $this->model->getListByGameId($ids);
+            return json(["total" => count($rows), 'rows' => $rows]);
         }
         return $this->view->fetch();
     }
