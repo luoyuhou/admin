@@ -19,10 +19,10 @@ class Wchat
         $order = Db::name("order")->where("id",$orderId)->find();
         $notify = new \NativePay();
         $input = new \WxPayUnifiedOrder();
-        $input->SetBody("六星商城");
-        $input->SetOut_trade_no($order["out_trade_no"]);
-        $input->SetTotal_fee($order["total_price"]*100);
-        $input->SetNotify_url("http://www.tpshop.com/home/pay/notify");
+        $input->SetBody("测试微信pay");
+        $input->SetOut_trade_no($order["order_id"]);
+        $input->SetTotal_fee($order["money"]);
+        $input->SetNotify_url("http://localhost:8000/home/pay/notify");
         $input->SetTrade_type("NATIVE");
         $input->SetProduct_id($order["id"]);
 

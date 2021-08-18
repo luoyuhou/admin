@@ -4,6 +4,9 @@
     <ul class="list-group">
         <li class="list-group-heading">{:__('Member center')}</li>
         <li class="list-group-item {:check_nav_active('user/index')}"> <a href="{:url('user/index')}"><i class="fa fa-user-circle fa-fw"></i> {:__('User center')}</a> </li>
+        <li class="list-group-item {:check_nav_active('game/index')}"> <a href="{:url('game/index')}"><i class="fa fa-gamepad fa-fw"></i> {:__('Game')}</a> </li>
+        <li class="list-group-item {:check_nav_active('order/index')}"> <a href="{:url('order/index')}"><i class="fa fa-file-text-o fa-fw"></i> {:__('My Order')}</a> </li>
+        <li class="list-group-item {:check_nav_active('refund/index')}"> <a href="{:url('refund/index')}"><i class="fa fa-dollar fa-fw"></i> {:__('Refund')}</a> </li>
         <li class="list-group-item {:check_nav_active('user/profile')}"> <a href="{:url('user/profile')}"><i class="fa fa-user-o fa-fw"></i> {:__('Profile')}</a> </li>
         <li class="list-group-item {:check_nav_active('user/changepwd')}"> <a href="{:url('user/changepwd')}"><i class="fa fa-key fa-fw"></i> {:__('Change password')}</a> </li>
         <li class="list-group-item {:check_nav_active('user/logout')}"> <a href="{:url('user/logout')}"><i class="fa fa-sign-out fa-fw"></i> {:__('Sign out')}</a> </li>

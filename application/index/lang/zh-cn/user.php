@@ -82,4 +82,7 @@ return [
     'Createtime'                                 => '创建日期',
     'Uploadtime'                                 => '上传时间',
     'Storage'                                    => '存储引擎',
+    'My Order'                                   => '我的订单',
+    'Refund'                                     => '我的退款',
+    'Game'                                       => '我的游戏',
 ];

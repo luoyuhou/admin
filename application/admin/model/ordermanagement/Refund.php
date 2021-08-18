@@ -22,11 +22,6 @@ class Refund extends Model
     protected $createTime = 'createtime';
     protected $updateTime = 'updatetime';
     protected $deleteTime = 'deletetime';
-
-    // 追加属性
-    protected $append = [
-        'finishtime_text'
-    ];
     
 
     
@@ -42,6 +37,10 @@ class Refund extends Model
     protected function setFinishtimeAttr($value)
     {
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+    }
+
+    public function getRefundList($where, $pre) {
+        return $this->where($where)->field('money, note, createtime')->limit($pre, 5)->select();
     }
 
 

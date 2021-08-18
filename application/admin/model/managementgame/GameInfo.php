@@ -22,11 +22,6 @@ class GameInfo extends Model
     protected $createTime = 'createtime';
     protected $updateTime = false;
     protected $deleteTime = false;
-
-    // 追加属性
-    protected $append = [
-        'game_time_text'
-    ];
     
 
     
@@ -44,5 +39,11 @@ class GameInfo extends Model
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
+    public function getGameInfoList($where, $index)
+    {
+        return $this->alias('g')->field('g.id, g.game_type, g.game_name, g.people, g.game_time, g.createtime')
+            ->join('game_info_detail d', 'g.id = d.game_info_id', 'LEFT')
+            ->where($where)->limit($index, 5)->select();
+    }
 
 }

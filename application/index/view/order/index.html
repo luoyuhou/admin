@@ -1,0 +1,161 @@
+<style>
+    .order-item {
+        margin: 10px 0;
+        -webkit-box-shadow: 1px 1px 3px #ccc;
+        -moz-box-shadow: 1px 1px 3px #ccc;
+        box-shadow: 1px 1px 3px #ccc;
+    }
+    .order-item-row {
+        display: flex;
+        line-height: 2;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+    }
+    .order-item-label {
+        color: #aaa;
+    }
+    .order-item-row:nth-last-child(1){
+        border-bottom: none;
+    }
+    .order-no-list {
+
+    }
+    .order-no-list::after {
+        content: '暂无数据';
+        line-height: 3;
+    }
+    .order-loading {
+
+    }
+    .order-loading::after {
+        content: '加载中...';
+        line-height: 3;
+    }
+</style>
+<div id="content-container" class="container">
+    <div class="row">
+        <div class="col-md-3">
+            {include file="common/sidenav" /}
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div style="padding: 1px 0; border-bottom: 1px solid #f5f5f5;">
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <!-- Brand and toggle get grouped for better mobile display -->
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                <a class="navbar-brand" href="#">{:__('My Order')}</a>
+                            </div>
+
+                            <!-- Collect the nav links, forms, and other content for toggling -->
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav" id="order-tab">
+                                    <li class="active"><a href="#">{:__('Unpaid')} <span class="sr-only">(current)</span></a></li>
+                                    <li><a href="#">{:__('Paid')}</a></li>
+                                    <li><a href="#">{:__('Cancel')}</a></li>
+                                    <li><a href="#">{:__('All')}</a></li>
+                                </ul>
+                            </div><!-- /.navbar-collapse -->
+                        </div><!-- /.container-fluid -->
+                    </nav>
+                </div>
+                <div class="clearfix">
+                    <div id="order-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+    let formatField = ['createtime'];
+    let map = {};
+    let index = 0;
+    const list = $('#order-tab').children();
+    for (let i = 0; i < list.length; i++) {
+        map[i] = [];
+        $(list[i]).on('click', function () {
+            index = i;
+            $(this).addClass('active').siblings().removeClass('active');
+            reload('./order/getOrderList');
+        })
+    }
+
+    reload('getOrderList');
+
+    async function reload(url) {
+        const body = $('#order-list');
+        body.empty();
+        body.append('<div class="order-loading" />');
+        if (!map[index].length) {
+            map[index] = await new Promise(resolve => {
+                $.ajax({
+                    url,
+                    method: "POST",
+                    data: {
+                        index: 0,
+                        state: 0,
+                    },
+                    success: (data) => {
+                        resolve(data);
+                    },
+                    error: () => {
+                        resolve([]);
+                    }
+                })
+            });
+        }
+        render();
+    }
+
+    function render() {
+        const body = $('#order-list');
+        body.empty();
+        let str = '';
+        let rows = map[index];
+        if (!rows.length) {
+            str = '<div class="order-no-list" />';
+        } else {
+            for (let i = 0; i < rows.length; i++) {
+                let row = rows[i];
+                str += '<div class="order-item col-md-12">'
+                for (let k in row) {
+                    str += `<div class="order-item-row">
+                                <div class="order-item-label">${k}</div>
+                                <div class="order-item-value">${formatDate(row[k], k)}</div>
+                            </div>`
+                }
+                str += '</div>'
+            }
+            str += '</div>'
+        }
+        body.append(str);
+    }
+
+    function formatDate(time, key) {
+        if (!formatField.includes(key)) {
+            return time;
+        }
+        // console.log(date);
+        var datetime = new Date();
+        datetime.setTime(time * 1000);
+        var year = datetime.getFullYear();
+        var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+        var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+        var hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+        var minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+        var second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+        return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
+    }
+
+</script>
