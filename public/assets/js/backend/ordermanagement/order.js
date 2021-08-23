@@ -6,9 +6,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.init({
                 extend: {
                     index_url: 'ordermanagement/order/index' + location.search,
-                    add_url: 'ordermanagement/order/add',
-                    edit_url: 'ordermanagement/order/edit',
-                    del_url: 'ordermanagement/order/del',
                     multi_url: 'ordermanagement/order/multi',
                     import_url: 'ordermanagement/order/import',
                     table: 'order',
@@ -33,13 +30,30 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'price', title: __('Price')},
                         {field: 'money', title: __('Money')},
                         {field: 'discount', title: __('Discount')},
-                        {field: 'recharge_type', title: __('Recharge_type')},
-                        {field: 'origin', title: __('Origin'), operate: 'LIKE'},
                         {field: 'is_delete', title: __('Is_delete')},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'finishtime', title: __('Finishtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {field: 'operate', title: __('Operate'), table: table,
+                            events: Table.api.events.operate,
+                            buttons: [
+                                {
+                                    name: 'recharge',
+                                    text: __('OrderRecharge'),
+                                    icon: 'fa fa-first-order',
+                                    classname: 'btn btn-info btn-xs btn-detail btn-dialog',
+                                    url: 'ordermanagement/order_recharge/edit',
+                                },
+                                {
+                                    name: 'detail',
+                                    text: __('OrderDetail'),
+                                    icon: 'fa fa-envira',
+                                    classname: 'btn btn-info btn-xs btn-detail btn-dialog',
+                                    url: 'ordermanagement/order_detail/edit',
+                                }
+                            ],
+                            formatter: Table.api.formatter.operate
+                        }
                     ]
                 ]
             });

@@ -14,5 +14,7 @@ return [
     'Createtime'    => '创建时间',
     'Finishtime'    => '完成时间',
     'Updatetime'    => '更新时间',
-    'Deletetime'    => '删除时间'
+    'Deletetime'    => '删除时间',
+    'OrderRecharge' => '订单支付',
+    'OrderDetail'   => '订单详情',
 ];

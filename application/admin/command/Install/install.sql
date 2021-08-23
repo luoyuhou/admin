@@ -44,8 +44,6 @@ CREATE TABLE `fa_order` (
     `price` int unsigned NOT NULL COMMENT '标价',
     `money` int unsigned NOT NULL COMMENT '充值金额',
     `discount` tinyint(2) unsigned NOT NULL DEFAULT 0 COMMENT '折扣',
-    `recharge_type` tinyint(1) unsigned NOT NULL COMMENT '充值方式',
-    `origin` varchar(128) NOT NULL COMMENT '充值来源',
     `is_delete` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
     `createtime` int(10) DEFAULT NULL COMMENT '创建时间',
     `finishtime` int(10) DEFAULT NULL COMMENT '完成时间',
@@ -66,6 +64,17 @@ CREATE TABLE `fa_order_detail` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `order_detail_index`(`o_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单详情表';
+
+DROP TABLE IF EXISTS `fa_order_recharege`;
+CREATE TABLE `fa_order_recharge` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `o_id` int unsigned NOT NULL COMMENT '订单ID',
+    `recharge_money` int unsigned NOT NULL DEFAULT 0 COMMENT '支付金额',
+    `recharge_type` tinyint unsigned NOT NULL COMMENT '支付方式',
+    `createtime` int unsigned NOT NULL COMMENT '支付时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`o_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单支付表';
 
 DROP TABLE IF EXISTS `fa_refund`;
 CREATE TABLE `fa_refund` (
@@ -114,3 +123,19 @@ CREATE TABLE `fa_terminal_config` (
     UNIQUE KEY `terminal_config_index`(`t_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备终端配置表';
 
+DROP TABLE IF EXISTS `fa_event`;
+CREATE TABLE `fa_event` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` int unsigned NOT NULL COMMENT '操作者',
+    `title` varchar(128) NOT NULL COMMENT '活动名称',
+    `description` text NOT NULL COMMENT '活动描述',
+    `prop_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '奖励类型',
+    `prop_amount` int unsigned NOT NULL COMMENT '奖励数量',
+    `repeat` tinyint(1) NOT NULL DEFAULT 1 COMMENT '活动是否重复参加',
+    `cycle` int unsigned NOT NULL DEFAULT 0 COMMENT '周期，单位/天',
+    `status` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '活动状态',
+    `createtime` int unsigned NOT NULL COMMENT '活动开始时间',
+    `updatetime` int unsigned COMMENT '活动更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='活动表';
