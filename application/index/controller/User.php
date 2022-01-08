@@ -340,7 +340,7 @@ class User extends Frontend
         $token = Random::uuid();
         $redis->set('scan-token-'.$token, 0, $this->token_expire);
         $url = Env::get('wx.service_domain', '')."/user/scanloginweb?code=".$token;
-        return ["url" =>$common->qrcode($url), "token" => $token];
+        return ["url" =>$url, "token" => $token];
     }
 
     public function getscanlogin() {

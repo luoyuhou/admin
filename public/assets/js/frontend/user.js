@@ -54,13 +54,21 @@ define(['jquery', 'bootstrap', 'frontend', 'form', 'template'], function ($, und
 
             function refreshScanLoginImg() {
                 $.ajax({url: './user/getscanloginurl', success: function (data, ret) {
-                    $('#scanloginimg').attr('src', "../../" + data.url);
+                    new QRCode(document.getElementById("scanloginimg"), {
+                        text:  data.url,
+                        width: 120,
+                        height: 120,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
                     token = data.token;
                 }});
                 waitScanLogin();
             }
 
             $(document).on("click", "#scanloginimg", function () {
+                $(this).empty();
                 refreshScanLoginImg();
             });
 
