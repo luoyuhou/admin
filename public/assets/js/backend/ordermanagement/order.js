@@ -17,7 +17,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
-                pk: 'id',
+                pk: 'order_id',
                 sortName: 'id',
                 columns: [
                     [
@@ -26,10 +26,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user_id', title: __('User_id')},
                         {field: 'order_id', title: __('Order_id'), operate: 'LIKE'},
                         {field: 'state', title: __('State')},
-                        {field: 'amount', title: __('Amount')},
-                        {field: 'price', title: __('Price')},
-                        {field: 'money', title: __('Money')},
-                        {field: 'discount', title: __('Discount')},
+                        {field: 'amount', title: __('Amount'), formatter: (value) => {
+                                return (value / 100).toFixed(2);
+                            }},
+                        {field: 'price', title: __('Price'), formatter: (value) => {
+                                return (value / 100).toFixed(2);
+                            }},
+                        {field: 'money', title: __('Money'), formatter: (value) => {
+                                return (value / 100).toFixed(2);
+                            }},
+                        {field: 'discount', title: __('Discount'), formatter: (value) => {
+                                if (!value) {
+                                    return value;
+                                }
+                                return (value / 100).toFixed(2);
+                            }},
                         {field: 'is_delete', title: __('Is_delete')},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'finishtime', title: __('Finishtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},

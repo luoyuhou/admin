@@ -35,6 +35,15 @@ class OrderDetail extends Backend
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
      * 需要将application/admin/library/traits/Backend.php中对应的方法复制到当前控制器,然后进行修改
      */
-    
+
+    public function edit($ids = null)
+    {
+        if ($this->request->isPost()) {
+            $this->error('拒绝修改');
+        }
+        $row = $this->model->where(['o_id' => $ids])->find();
+        $this->assign('row', $row);
+        return $this->view->fetch();
+    }
 
 }

@@ -152,4 +152,14 @@ class Validate extends Api
         }
         $this->success();
     }
+
+    public function check_order_create()
+    {
+        $money = $this->request->param('money');
+        $amount = $this->request->param('amount');
+        $price = $this->request->param('price');
+        if (!$money || !$amount || !$price) {
+            $this->error(__('缺少参数'));
+        }
+    }
 }
